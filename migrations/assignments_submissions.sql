@@ -1,3 +1,6 @@
+-- DROP TABLE IF EXISTS assignments_submissions
+-- DROP TABLE IF EXISTS assignments
+
 CREATE TABLE assignments (
   id SERIAL PRIMARY KEY NOT NULL,
   name VARCHAR(255),
