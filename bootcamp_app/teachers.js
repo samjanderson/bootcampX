@@ -8,17 +8,19 @@ const pool = new Pool({
   database: 'bootcampx'
 });
 
-
-//we use rows in our then because we can see that rows property contains an array of the expected results
-pool.query(`
+const cohortName = process.argv[2] || 'JUL02';
+const values = [`%${cohortName}%`, limit];
+const queryString = `
 SELECT DISTINCT teachers.name as teacher, cohorts.name as cohort
 FROM teachers
 JOIN assistance_requests ON teacher_id = teachers.id
 JOIN students ON student_id = students.id
 JOIN cohorts ON cohort_id = cohorts.id
-WHERE cohorts.name = '${process.argv[2] || 'JUL02'}'
+WHERE cohorts.name = $1
 ORDER BY teacher;
-`)
+`;
+
+pool.query(queryString, values)
 .then(res => {
   res.rows.forEach(row => {
     console.log(`${row.cohort}: ${row.teacher}`);
@@ -26,21 +28,22 @@ ORDER BY teacher;
 });
 
 
-// My incorrect answer
+//old version before proper update for reference
+//we use rows in our then because we can see that rows property contains an array of the expected results
 // pool.query(`
-// SELECT DISTINCT teachers.name AS teacher, cohorts.name AS cohort
-// FROM assistance_requests
-// JOIN teachers ON teacher_id = teachers.id
+// SELECT DISTINCT teachers.name as teacher, cohorts.name as cohort
+// FROM teachers
+// JOIN assistance_requests ON teacher_id = teachers.id
 // JOIN students ON student_id = students.id
 // JOIN cohorts ON cohort_id = cohorts.id
-// WHERE cohorts.name LIKE '%${process.argv[2]}%'
-// ORDER BY teachers.name;
+// WHERE cohorts.name = '${process.argv[2] || 'JUL02'}'
+// ORDER BY teacher;
 // `)
 // .then(res => {
-//   res.rows.forEach(user => {
-//     console.log(`${user.cohort}: ${user.teacher}`);
+//   res.rows.forEach(row => {
+//     console.log(`${row.cohort}: ${row.teacher}`);
 //   })
-// })
-// .catch(err => console.error('query error', err.stack));
+// });
+
 
 
